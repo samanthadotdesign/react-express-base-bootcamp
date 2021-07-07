@@ -16,19 +16,19 @@ export default function App() {
     currentPlayer === 'X' ? setCurrentPlayer('O') : setCurrentPlayer('X');
   }
 
-const rows = board.map((row, rowIndex) => {
-  // row is one *unnested* array
-  console.log('row', row);
-  const buttons = row.map((square, colIndex) => (<button onClick={() => handleClick(rowIndex, colIndex)}>{square}</button>));
-  return (
-  <div className="boardRow">
-    {buttons}
-  </div>);
-});
+  const rows = board.map((row, rowIndex) => {
+    // row is one *unnested* array
+    console.log('row', row);
+    const buttons = row.map((square, colIndex) => (<button onClick={() => handleClick(rowIndex, colIndex)}>{square}</button>));
+    return (
+    <div className="boardRow">
+      {buttons}
+    </div>);
+  });
 
-return (
-  <div className="board">
-    {rows}
-  </div>
-)
-}
+  return (
+    <div className="board">
+      {rows}
+    </div>
+  )
+};
