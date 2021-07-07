@@ -1,3 +1,26 @@
 body {
   background-color: pink;
 }
+
+button {
+  margin: 10px;
+  width: 30px;
+  height: 30px;
+  color: black;
+  background-color: white;
+}
+
+.boardRow {
+  width: 150px;
+}
+
+.board {
+  height: 150px;
+}
+
+// .square {
+//   height: 30px;
+//   width: 30px;
+//   background-color: white;
+//   color: black;
+// }
