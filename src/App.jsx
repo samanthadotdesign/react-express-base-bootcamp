@@ -9,6 +9,10 @@ export default function App() {
   const [message, setMessage] = useState('welcome to the game');
   const [cards, setCards] = useState(shuffleCards(makeDeck()));
 
+  // Keep track of score states that we can include in the render
+  const [computerScore, setComputerScore] = useState(0);
+  const [playerScore, setPlayerScore] = useState(0);
+
   // set the default player hand as empty
   // I have access to playerHand throughout the program
   const [playerHand, setPlayerHand] = useState([]);
@@ -17,48 +21,83 @@ export default function App() {
   const [computerHand, setComputerHand] = useState([]);
 
   // create the deal button click handler
+  // Deal gives brand new cards to each player
   const dealCards = () => {
-    const hand = [cards.pop(), cards.pop()];
-    setPlayerHand(hand);
-    // updates playerHand variable to the hand array above
-    setCards([...cards]);
+    // If there are no cards left
+    if (cards.length < 2) {
+      setMessage('there are no cards left. game over!');
+    } else {
+      const hand = [cards.pop()];
+      const comHand = [cards.pop()];
+      setPlayerHand(hand);
+      setComputerHand(comHand);
+
+      // updates playerHand variable to the hand array above
+      setCards([...cards]);
     // deck has 52 cards
     // after cards have been popped out of the deck, we need to update the originals cards variable
-
-    // We need to use hand instead of playerHand (this will not be updated until next rerender)
-    // Game logic
-    const playerOne = hand[0];
-    const playerTwo = hand[1];
-    console.log(hand);
-
-    // We make sure that the cards are 2 otherwise it will throw an error for rank
-    if (hand.length === 2) {
-    // We have to wrap the "returned message" inside React's setMessage
-      if (playerOne.rank > playerTwo.rank) {
-        setMessage('player one wins');
-      }
-      else if (playerOne.rank < playerTwo.rank) {
-        setMessage('player two wins');
-      }
-      else { setMessage('players draw'); }
     }
   };
 
+  // Scoring logic happens here
+  const checkWinner = () => {
+    // Find the largest card from each of the computer & player hands
+    // Let the first card be the max card
+    let playerHighestCard = playerHand[0];
+    for (let i = 1; i < playerHand.length; i += 1) {
+      if (playerHighestCard.rank < playerHand[i].rank) {
+        playerHighestCard = playerHand[i];
+      }
+    }
+
+    let computerHighestCard = computerHand[0];
+    for (let i = 1; i < computerHand.length; i += 1) {
+      if (computerHighestCard.rank < computerHand[i].rank) {
+        computerHighestCard = computerHand[i];
+      }
+    }
+
+    // We make sure that the cards are 2 otherwise it will throw an error for rank
+    // We have to wrap the "returned message" inside React's setMessage
+    if (computerHighestCard.rank > playerHighestCard.rank) {
+      setMessage('computer wins');
+      setComputerScore(computerScore + 1);
+    }
+    else if (computerHighestCard.rank < playerHighestCard.rank) {
+      setMessage('player wins');
+      setPlayerScore(playerScore + 1);
+    }
+    else { setMessage('computer and player draw'); }
+  };
+
   // deals one card each to com + player
-  const computerCards = () => {
-    const computerCard = cards.pop();
-    const playerCard = cards.pop();
+  const extraCards = () => {
+    if (cards.length < 2) {
+      setMessage('there are no cards left. game over!');
+    } else {
+      const computerCard = cards.pop();
+      const playerCard = cards.pop();
 
-    // Update cards
-    setCards([...cards]);
+      // Update cards
+      setCards([...cards]);
 
-    // Give the whole player hand + add the two new cards
-    setPlayerHand([...playerHand, computerCard, playerCard]);
+      // Give the whole player hand + new player card
+      setPlayerHand([...playerHand, playerCard]);
+
+      // Adding cards to Computer hand
+      setComputerHand([...computerHand, computerCard]);
+    }
   };
 
   // for every item in the list, create the component
   // note that when this renders the first time and the hand is empty
   const handEls = playerHand.map(({ name, suit }) => (
+    <div>
+      {name}
+      {suit}
+    </div>
+  ));
+  const computerEls = computerHand.map(({ name, suit }) => (
     <div>
       {name}
       {suit}
@@ -71,15 +110,21 @@ export default function App() {
       <div>
         {/* This message will be updated to the winner name */}
         <p>{message}</p>
-        <h3>cards:</h3>
+        <h3>player cards:</h3>
         {handEls}
+        <p>{playerScore}</p>
+        <h3>computer cards:</h3>
+        {computerEls}
+        <p>{computerScore}</p>
       </div>
       <p>
         {/* We wrap two functions to happen on click in anonymous function */}
         {/* player 1 vs player 2 */}
-        <button onClick={dealCards}>deal</button>
+        <button onClick={dealCards}>redeal new hand</button>
         {/* On click, the computer and player will get each card (computer vs. player) */}
-        <button onClick={computerCards}>play hand</button>
+        <button onClick={extraCards}>deal more cards</button>
+        {/* Evaluate cards  */}
+        <button onClick={checkWinner}>check winner</button>
       </p>
     </div>
   );
