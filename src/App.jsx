@@ -16,6 +16,16 @@ export default function App() {
     setInputText('');
   };
 
+  // We can declare a "mini component" here
+  // Note the uppercase snakecase
+  // Component must < return > to be rendered
+  const LinkList = () => {
+    const result = links.map((link) => (
+      <p>{link}</p>
+    ));
+    return result;
+  };
+
   return (
     <div>
       <div>
@@ -25,9 +35,7 @@ export default function App() {
       </div>
       <div>
         {/* We map every link to a new p tag */}
-        {links.map((link) => (
-          <p>{link}</p>
-        ))}
+        <LinkList />
       </div>
     </div>
   );
