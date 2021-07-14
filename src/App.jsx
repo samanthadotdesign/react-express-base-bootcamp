@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 
 // Form component
-const LinkForm = () => {
+// props.FunctionName -> alternatively
+// const LinkForm = (props) => {}
+const LinkForm = ({ setInputText, inputText, handleLink }) => {
+  // We need access to everything inside the parent component
+  // that wasn't declared inside the component
+  // setInputText, inputText, handleInputText, handleLink
+
   // Save the value of inputText
   const handleInputText = (e) => {
     setInputText(e.target.value);
@@ -16,7 +22,7 @@ const LinkForm = () => {
 };
 
 // Link component
-const LinkList = () => {
+const LinkList = ({ links }) => {
   const result = links.map((link) => (
     <p>{link}</p>
   ));
@@ -37,8 +43,13 @@ export default function App() {
 
   return (
     <div>
-      <LinkForm />
-      <LinkList />
+      {/* This is where I put the prop */}
+      <LinkForm
+        setInputText={setInputText}
+        inputText={inputText}
+        handleLink={handleLink}
+      />
+      <LinkList links={links} />
     </div>
   );
 }
