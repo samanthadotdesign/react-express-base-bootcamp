@@ -1,13 +1,32 @@
 import React, { useState } from 'react';
 
-export default function App() {
-  const [inputText, setInputText] = useState('');
-  const [links, setLinks] = useState([]);
-
+// Form component
+const LinkForm = () => {
   // Save the value of inputText
   const handleInputText = (e) => {
     setInputText(e.target.value);
   };
+
+  return (
+    <div>
+      <input value={inputText} onChange={handleInputText} />
+      <button onClick={handleLink}>Submit</button>
+    </div>
+  );
+};
+
+// Link component
+const LinkList = () => {
+  const result = links.map((link) => (
+    <p>{link}</p>
+  ));
+  return result;
+};
+
+// Parent component
+export default function App() {
+  const [inputText, setInputText] = useState('');
+  const [links, setLinks] = useState([]);
 
   // Save the inputText in the links
   const handleLink = () => {
@@ -16,27 +35,10 @@ export default function App() {
     setInputText('');
   };
 
-  // We can declare a "mini component" here
-  // Note the uppercase snakecase
-  // Component must < return > to be rendered
-  const LinkList = () => {
-    const result = links.map((link) => (
-      <p>{link}</p>
-    ));
-    return result;
-  };
-
   return (
     <div>
-      <div>
-        {/* handleInputText */}
-        <input value={inputText} onChange={handleInputText} />
-        <button onClick={handleLink}>Submit</button>
-      </div>
-      <div>
-        {/* We map every link to a new p tag */}
-        <LinkList />
-      </div>
+      <LinkForm />
+      <LinkList />
     </div>
   );
 }
