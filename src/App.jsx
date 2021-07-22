@@ -1,55 +1,75 @@
+import './styles.scss';
 import React, { useState } from 'react';
+import mango from './assets/image2.jpeg';
+import fig from './assets/image3.jpeg';
+import gaze from './assets/image4.jpeg';
+import peach from './assets/image5.jpeg';
+import avocado from './assets/image6.jpeg';
+import cabbage from './assets/image1.jpeg';
 
-// Form component
-// props.FunctionName -> alternatively
-// const LinkForm = (props) => {}
-const LinkForm = ({ setInputText, inputText, handleLink }) => {
-  // We need access to everything inside the parent component
-  // that wasn't declared inside the component
-  // setInputText, inputText, handleInputText, handleLink
+const images = [cabbage, mango, fig, gaze, peach, avocado];
 
-  // Save the value of inputText
-  const handleInputText = (e) => {
-    setInputText(e.target.value);
+// Loading component for slow internet
+const Loading = ({ calculatedWidth }) => (
+  <aside>
+    <div className="loading-bar">
+      <label htmlFor="images-loaded">Loading all your favorite images</label>
+      <progress id="images-loaded" max="100" value={calculatedWidth} />
+    </div>
+  </aside>
+);
+
+const App = () => {
+  // currentImage is the index of the currentImage
+  const [currentImage, setCurrentImage] = useState(0);
+
+  const [numLoaded, setNumLoaded] = useState(0);
+
+  const handleClick = () => {
+    setCurrentImage((currentImage) => (currentImage < images.length - 1 ? currentImage + 1 : 0));
+  };
+
+  const handleImageLoad = () => {
+    setNumLoaded((numLoaded) => numLoaded + 1);
   };
 
   return (
-    <div>
-      <input value={inputText} onChange={handleInputText} />
-      <button onClick={handleLink}>Submit</button>
-    </div>
+    <section>
+      <header>
+        <h1>Zesty</h1>
+        <h2>
+          A photography project
+          <br />
+          by Samantha Lee
+        </h2>
+      </header>
+
+      <figure>
+        {numLoaded < images.length
+          && <Loading calculatedWidth={(numLoaded / images.length) * 100} /> }
+
+        <figcaption>
+          {currentImage + 1}
+          {' '}
+          /
+          {' '}
+          {images.length}
+        </figcaption>
+
+        {images.map((imageURL, index) => (
+          <img
+            alt=""
+            key={imageURL}
+            src={imageURL}
+            onClick={handleClick}
+            onLoad={handleImageLoad}
+            // Hiding and displaying images based on its index
+            // style={{ opacity: currentImage === index ? 1 : 0 }}
+            className={currentImage === index ? 'display' : 'hide'}
+          />
+        ))}
+      </figure>
+    </section>
   );
 };
-
-// Link component
-const LinkList = ({ links }) => {
-  const result = links.map((link) => (
-    <p>{link}</p>
-  ));
-  return result;
-};
-
-// Parent component
-export default function App() {
-  const [inputText, setInputText] = useState('');
-  const [links, setLinks] = useState([]);
-
-  // Save the inputText in the links
-  const handleLink = () => {
-    setLinks([...links, inputText]);
-    // Empty the input text after clicking submit
-    setInputText('');
-  };
-
-  return (
-    <div>
-      {/* This is where I put the prop */}
-      <LinkForm
-        setInputText={setInputText}
-        inputText={inputText}
-        handleLink={handleLink}
-      />
-      <LinkList links={links} />
-    </div>
-  );
-}
+export default App;
