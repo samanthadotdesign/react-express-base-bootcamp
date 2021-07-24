@@ -40,6 +40,7 @@ figure {
   margin: 0;
   position: relative;
   width: 50vw;
+  cursor: url("/cursor.svg") 25 25, pointer;
 }
 
 figcaption {
