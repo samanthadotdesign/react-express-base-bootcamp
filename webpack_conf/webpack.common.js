@@ -26,18 +26,18 @@ module.exports = {
         use: ['html-loader'],
       },
       {
-        test: /\.(svg|png|jpeg|jpg|gif)$/i,
+        test: /\.(png|jpeg|jpg|gif)$/i,
         use: {
           loader: 'file-loader',
         },
       },
       {
         test: /\.svg$/i,
-        use: [
+        use:
           {
             loader: 'url-loader',
           },
-        ],
-      }
+      },
     ],
+  },
 };
