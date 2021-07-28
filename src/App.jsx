@@ -1,75 +1,73 @@
-import './styles.scss';
 import React, { useState } from 'react';
-import mango from './assets/image2.jpeg';
-import fig from './assets/image3.jpeg';
-import gaze from './assets/image4.jpeg';
-import peach from './assets/image5.jpeg';
-import avocado from './assets/image6.jpeg';
-import cabbage from './assets/image1.jpeg';
 
-const images = [cabbage, mango, fig, gaze, peach, avocado];
+import Header from './components/Header/index.jsx';
+import Footer from './components/Footer/index.jsx';
+import ImgBox from './components/ImgBox/index.jsx';
 
-// Loading component for slow internet
-const Loading = ({ calculatedWidth }) => (
-  <aside>
-    <div className="loading-bar">
-      <label htmlFor="images-loaded">Loading all your favorite images</label>
-      <progress id="images-loaded" max="100" value={calculatedWidth} />
-    </div>
-  </aside>
-);
+import { GlobalStyle, ImageContainer, Wrapper } from './styles.js';
+
+const matrix = [
+  [0, 0], [1, 0], [2, 0], [3, 0],
+  [0, 1], [1, 1], [2, 1], [3, 1],
+  [0, 2], [1, 2], [2, 2], [3, 2],
+  [0, 3], [1, 3], [2, 3], [3, 3],
+  [0, 4], [1, 4], [2, 4], [3, 4],
+  [0, 5], [1, 5], [2, 5], [3, 5],
+];
 
 const App = () => {
-  // currentImage is the index of the currentImage
-  const [currentImage, setCurrentImage] = useState(0);
+  /* distance: distance between cursor & image center
+  is a value from 0 to 1 where 0 means image is unified
+  and 1 is the farthest possible distance
+  on load, we want a scattered image (1) */
+  const [distance, setDistance] = useState(1);
 
-  const [numLoaded, setNumLoaded] = useState(0);
+  // exponentiation function
+  const easing = (num) => Math.pow(num, 3);
 
-  const handleClick = () => {
-    setCurrentImage((currentImage) => (currentImage < images.length - 1 ? currentImage + 1 : 0));
+  const calculateDistance = ([x, y]) => {
+    //  center stores an array that contains the pixel positions of the center of the window as px value
+    const center = [window.innerWidth / 2, window.innerHeight / 2];
+
+    // maximum possible value for the hypotenuse (or max distance from the center of the browser)
+    // Math.hypot returns squared value
+    const maxHypot = Math.hypot(center[0], center[1]);
+
+    // Current hypotenuse for the cursor position from the center
+    const hypot = Math.hypot(center[0] - x, center[1] - y);
+
+    // distance is a percentage based off current value & maximum value (value between 0 & 1)
+    const distance = hypot / maxHypot;
+
+    const easeDistance = easing(distance);
+
+    // easeDistance is the distance that our image should evaluate to
+    setDistance(easeDistance);
   };
 
-  const handleImageLoad = () => {
-    setNumLoaded((numLoaded) => numLoaded + 1);
+  // MouseEvent.clientY and MouseEvent.clientX (properties attached to the mouseEvent object)
+  const handleMove = ({ clientX, clientY }) => {
+    calculateDistance([clientX, clientY]);
   };
 
+  const handleTouchMove = ({ touches }) => {
+    calculateDistance([touches[0].clientX, touches[0].clientY]);
+  };
+
+  // we're using distance value to conditionally trigger the animation
   return (
-    <section>
-      <header>
-        <h1>Zesty</h1>
-        <h2>
-          A photography project
-          <br />
-          by Samantha Lee
-        </h2>
-      </header>
-
-      <figure>
-        {numLoaded < images.length
-          && <Loading calculatedWidth={(numLoaded / images.length) * 100} /> }
-
-        <figcaption>
-          {currentImage + 1}
-          {' '}
-          /
-          {' '}
-          {images.length}
-        </figcaption>
-
-        {images.map((imageURL, index) => (
-          <img
-            alt=""
-            key={imageURL}
-            src={imageURL}
-            onClick={handleClick}
-            onLoad={handleImageLoad}
-            // Hiding and displaying images based on its index
-            // style={{ opacity: currentImage === index ? 1 : 0 }}
-            className={currentImage === index ? 'display' : 'hide'}
-          />
-        ))}
-      </figure>
-    </section>
+    <div className="App">
+      <GlobalStyle />
+      <Header />
+      <Footer />
+      <Wrapper onMouseMove={handleMove} onTouchMove={handleTouchMove}>
+        <ImageContainer $isTogether={distance < 0.001}>
+          {matrix.map(([x, y], index) => (
+            <ImgBox key={index} x={x} y={y} percent={distance} />
+          ))}
+        </ImageContainer>
+      </Wrapper>
+    </div>
   );
 };
 export default App;

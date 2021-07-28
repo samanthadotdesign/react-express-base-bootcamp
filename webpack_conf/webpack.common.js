@@ -26,11 +26,24 @@ module.exports = {
         use: ['html-loader'],
       },
       {
-        test: /\.(svg|png|jpeg|jpg|gif)$/i,
+        test: /\.(png|jpeg|jpg|gif)$/i,
         use: {
           loader: 'file-loader',
         },
       },
+      {
+        test: /\.svg$/i,
+        use:
+          {
+            loader: 'svg-url-loader',
+          },
+      },
     ],
   },
+  // helps locating module by using absolute path
+  // resolve: {
+  //   alias: {
+  //     Components: path.resolve(__dirname, 'src/components'),
+  //   },
+  // },
 };
